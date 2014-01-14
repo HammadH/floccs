@@ -24,8 +24,14 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
+LOGOUT_URL = "/"
+
+
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'CustomUser.User'
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Application definition
 
@@ -36,6 +42,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'south',
+    'CustomUser',
+    'Profile',
+    
 )
 
 MIDDLEWARE_CLASSES = (
