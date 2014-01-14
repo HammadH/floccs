@@ -1,0 +1,14 @@
+<form method="POST">{% csrf_token %}
+	{{login_form.as_p}}
+	<input type="hidden" name="login_form" />
+	<button type="submit">Submit</button>
+</form>
+
+
+<form method="POST">{% csrf_token %}
+	{{signup_form.as_p}}
+	<input type="hidden" name="signup_form" />
+	<button type="submit">Submit</button>
+
+</form>
+
