@@ -7,6 +7,9 @@ from django.contrib.auth.models import BaseUserManager
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core import validators
+from django.core.urlresolvers import reverse
+
+
 
 class UserManager(BaseUserManager):
 
@@ -105,6 +108,17 @@ class User(AbstractUser):
 
 
 
+    def get_absolute_url(self):
+       
+        ''' for viewing one's own profile'''
+
+        return reverse('profile', kwargs={'username': self.username})
+
+    def view_profile(self):
+       
+        ''' for viewing other's profile'''
+
+        return reverse('view_profile', kwargs={'username': self.username })
 
 
 

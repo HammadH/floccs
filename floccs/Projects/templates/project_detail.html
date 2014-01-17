@@ -1,0 +1,43 @@
+<html>
+<head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	$(document).on('click', '#followers', function(){
+		$(this).replaceWith("{% for follower in project.followers.all %}<a href='{{ follower.view_profile }}'>{{follower}}</a>, {% endfor %}");
+
+	});
+
+});
+</script>
+</head>
+
+<body>
+	<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=415792798554746";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<a href="{{ project.owner.view_profile }}">{{project.owner}}</a><br>
+
+{{project.name}}<br>
+{{project.description}}<br>
+
+{% if project.followers.count > 0%}
+<p>interested: <b id='followers' style="cursor:pointer">{{project.followers.count}}</b></p>
+{% endif %}
+
+<p>Project Status:{{project.project_status}}</p>
+{% if project.project_status == 'OPEN' %}
+<a href="{% url 'add_follower' project.id %}">Yes I want to work on this project</a>
+<div class="fb-share-button" data-href="http://developers.facebook.com/docs/plugins/" data-type="button_count"></div>
+{% endif %}
+
+
+</body>
+
+</html>

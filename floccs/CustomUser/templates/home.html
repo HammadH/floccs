@@ -1,0 +1,19 @@
+welcome {{user.username}}<br>
+
+{% load notification_tags %}
+{% unread_notifications as unread %}
+{{unread}}
+
+<br>
+
+<a href="{% url 'profile' user.username %}">My Profile</a>
+<a href="{% url 'my_projects'  %}">My Projects</a>
+<a href="{% url 'logout' %}">Logout</a>
+<br>
+
+latest projects:
+<br>
+<br>
+{% for project in projects %}
+<a href="{% url 'project_details' id=project.id %}"> {{project}}</a>  ({% for tag in project.tags.all %} {{tag}}{% endfor %})--{{project.followers.count}} interested<br>
+{% endfor %}

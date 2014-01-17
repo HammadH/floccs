@@ -30,7 +30,7 @@ class IndexView(View):
 				if user is not None:
 					if user.is_active:
 						login(request, user)
-						return HttpResponseRedirect(reverse('profile', kwargs={'user':user.username})) 
+						return HttpResponseRedirect(reverse('home')) 
 					else:
 						return HttpResponse('You need to activate your account from email ')
 				else:
@@ -42,7 +42,7 @@ class IndexView(View):
 			form = UserForm(request.POST)
 			if form.is_valid:
 				new_user = form.save()
-				return HttpResponseRedirect(reverse('profile', kwargs={'user':new_user.username}))
+				return HttpResponseRedirect(reverse('new_profile', kwargs={'username':new_user.username}))
 				
 					
 			else:
