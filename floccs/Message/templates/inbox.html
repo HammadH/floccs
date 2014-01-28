@@ -1,0 +1,8 @@
+this is inbox of {{user}}
+
+
+{% for conversation in conversations %}
+
+<a href="{{ conversation.get_absolute_url  }}">{{conversation}}</a>
+
+{% endfor %}

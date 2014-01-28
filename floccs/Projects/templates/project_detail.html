@@ -1,15 +1,62 @@
 <html>
 <head>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/chat.css">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="{{ STATIC_URL|default:MEDIA_URL }}js/socket.io.js"></script>
+<script>WEB_SOCKET_SWF_LOCATION="{{ STATIC_URL }}flashsocket/WebSocketMain.swf";</script>
 <script>
+
+window.room = '{{project.id}}';
+var socket = io.connect("/cat");
+socket.on('connect', function(){
+	socket.emit('join', window.room, function(users){
+		$('#connected').append(users);
+	});
+	socket.emit('user_entered', '{{user}}');
+});
+socket.on('announcement', function(user){
+	$('#connected').append(user);
+
+});
+socket.on('msg_to_room', message);
+
+function message (from, msg) {
+    $('#lines').append($('<p>').append($('<b>').text(from), msg));
+}
+
 $(document).ready(function(){
+	
+
 	$(document).on('click', '#followers', function(){
 		$(this).replaceWith("{% for follower in project.followers.all %}<a href='{{ follower.view_profile }}'>{{follower}}</a>, {% endfor %}");
 
 	});
 
+
+	$(document).on('click', '.reply_button', function(){
+		var message_id = $(this).data('id')
+		$('.message_reply_div[data-id='+message_id+']').append("<form id='comment_form' method='POST'>{% csrf_token %}<textarea rows='3' name='message'></textarea><input type='hidden' name='project' value='{{project.id}}''><input type='hidden' name='parent' value="+message_id+"><input type='hidden' name='is_reply' value='True'/><button type='submit'>Post</button></form>");	
+
+	});
+
+
+	$('#send-message').submit(function () {
+	    message('me', $('#message').val());
+	    socket.emit('user message', '{{user}}', $('#message').val());
+	    clear();
+	    $('#lines').get(0).scrollTop = 10000000;
+	    return false;
+    });
+
+    function clear () {
+        $('#message').val('').focus();
+    };
 });
 </script>
+
+<style>
+
+</style>
 </head>
 
 <body>
@@ -28,14 +75,37 @@ $(document).ready(function(){
 {{project.description}}<br>
 
 {% if project.followers.count > 0%}
-<p>interested: <b id='followers' style="cursor:pointer">{{project.followers.count}}</b></p>
+<p>Following: <b id='followers' style="cursor:pointer">{{project.followers.count}}</b></p>
 {% endif %}
 
 <p>Project Status:{{project.project_status}}</p>
 {% if project.project_status == 'OPEN' %}
-<a href="{% url 'add_follower' project.id %}">Yes I want to work on this project</a>
+<a href="{% url 'add_follower' project.id %}">Follow</a>
 <div class="fb-share-button" data-href="http://developers.facebook.com/docs/plugins/" data-type="button_count"></div>
 {% endif %}
+
+
+<form id='comment_form' method="POST">{% csrf_token %}
+	<textarea rows='3' name='message'></textarea>
+	<input type='hidden' name='project' value='{{project.id}}'/>
+	<input type='hidden' name='parent' value=''/>
+	<input type='hidden' name='is_reply' value='False'/>
+	<button type="submit">Post</button>
+</form>
+ <form id="send-message">
+    <input id="message">
+    <button>Send</button>
+  </form>
+
+	<p id='connected'>onlines:</p>
+<div id="lines"></div>
+<div id = 'messages'>
+{% for message in project.messages.all %}
+{{message.sender}}:{{message.message}}:{{message.timestamp|timesince}}<p class='reply_button' data-id='{{message.id}}' style='cursor:pointer'>*</p><br>
+<div class='message_reply_div' data-id='{{message.id}}' style='margin-left:20px'></div>
+{% endfor %}
+</div>
+
 
 
 </body>

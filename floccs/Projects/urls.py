@@ -7,6 +7,7 @@ urlpatterns = patterns('',
     # Examples:
    # url(r'^$', HomeView.as_view(), name='home'),
     url(r'^new/$', NewProjectView.as_view(), name='new_project'),
+    url(r'^edit/(?P<id>\d+)/$', ProjectEditView.as_view(), name='edit_project'),
     url(r'^(?P<id>\d+)/$', ProjectDetailView.as_view(), name='project_details'),
     url(r'^my_projects/', UserProjectsListView.as_view(), name = 'my_projects'),
     url(r'^(?P<project_id>\d+)/follow_project/$', addFollower, name='add_follower'),

@@ -1,5 +1,5 @@
 my projects
 
 {% for project in object_list %}
-{{project}}
+<a href= "{{ project.edit_project_url }}">{{project}}</a>
 {% endfor %}

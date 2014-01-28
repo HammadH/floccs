@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+import django.conf.global_settings as DEFAULT_SETTINGS
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -24,7 +25,10 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
+LOGIN_URL = '/'
 LOGOUT_URL = "/"
+LOGIN_REDIRECT_URL = '/home/'
+LOGIN_ERROR_URL = '/login-error/'
 
 
 ALLOWED_HOSTS = []
@@ -45,6 +49,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'south',
     'taggit',
+    'debug_toolbar',
+    'social_auth',
     'CustomUser',
     'Profile',
     'Projects',
@@ -53,6 +59,41 @@ INSTALLED_APPS = (
 
     
 )
+
+
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    'social_auth.backends.twitter.TwitterBackend',
+    'social_auth.backends.facebook.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    )
+
+TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
+    
+    'social_auth.context_processors.social_auth_by_type_backends',
+    ) 
+
+SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
+SOCIAL_AUTH_UID_LENGTH =  225
+SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 225
+SOCIAL_AUTH_NONCE_SERVER_URL_LENGTH = 225
+SOCIAL_AUTH_ASSOCIATION_SERVER_URL_LENGTH = 225
+
+SESSION_SERIALIZER='django.contrib.sessions.serializers.PickleSerializer'
+
+
+SOCIAL_AUTH_ENABLED_BACKENDS = ('google','twitter','facebook')
+SOCIAL_AUTH_USER_MODEL = 'CustomUser.User'
+
+GOOGLE_OAUTH2_CLIENT_ID = '119234541690.apps.googleusercontent.com'
+GOOGLE_OAUTH2_CLIENT_SECRET = 'SuFiiy68iqu-GZ5zvITKYdbD'
+
+TWITTER_CONSUMER_KEY         = '3p2S8oDcoyBb7ndT9F6wJw'
+TWITTER_CONSUMER_SECRET      = 'A4Of0OFCJnI32ULhcrEVMeYCChqtL2PmOwZKI5JLw'
+
+FACEBOOK_APP_ID              = '584295751657017'
+FACEBOOK_API_SECRET          = '48728289f1737eb56a1a98ce969aaee8'
+FACEBOOK_EXTENDED_PERMISSIONS = ['email', 'user_location']
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

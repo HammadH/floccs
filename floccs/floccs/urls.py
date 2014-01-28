@@ -9,6 +9,8 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', IndexView.as_view(), name='index'),
     url(r'^', include('CustomUser.urls')),
+    url(r'^auth/', include('social_auth.urls')),
+    url(r'^inbox/', include('Message.urls')),
     url(r'^logout/', logout_view, name = 'logout'),
 
 

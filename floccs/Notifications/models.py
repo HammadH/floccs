@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.contrib import admin
 
 from CustomUser.models import User
-from Message.models import PersonalMessage, ThreadedMessage
+from Message.models import PersonalMessage
 
 
 
