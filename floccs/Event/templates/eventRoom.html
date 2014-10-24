@@ -1,0 +1,230 @@
+{% load staticfiles %}
+{% load thumbnail %}
+
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="{% static 'css/chat.css' %}"/>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://localhost:4000/socket.io/socket.io.js"></script>
+
+
+
+
+<script>
+
+// $(document).ready(function(){
+
+// 	$.ajaxSetup({ 
+//      beforeSend: function(xhr, settings) {
+//          function getCookie(name) {
+//              var cookieValue = null;
+//              if (document.cookie && document.cookie != '') {
+//                  var cookies = document.cookie.split(';');
+//                  for (var i = 0; i < cookies.length; i++) {
+//                      var cookie = jQuery.trim(cookies[i]);
+//                      // Does this cookie string begin with the name we want?
+//                  if (cookie.substring(0, name.length + 1) == (name + '=')) {
+//                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//                      break;
+//                  }
+//              }
+//          }
+//          return cookieValue;
+//          }
+//          if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+//              // Only send the token to relative URLs i.e. locally.
+//              xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+//          }
+//      } 
+// });
+
+
+
+// 	$(document).on('click', '#follow_event', function(){
+// 		$('#follow_event').replaceWith("<button id='unfollow_event'>Unfollow</button>");
+// 		$.ajax({
+// 			url: "{% url 'add_follower' %}",
+// 			type: "POST",
+// 			dataType: 'json',
+// 			data: {
+// 					'event_id' : {{event.id}},
+					
+// 			},
+// 			success: function(result){
+// 				alert('ok');
+
+// 			},
+// 			failure: function(e){
+// 				alert(e);
+// 			}
+// 		});
+
+// 	});
+
+
+// 	$(document).on('click', '#unfollow_event', function(){
+// 		$('#unfollow_event').replaceWith("<button id='follow_event'>Follow</button>");
+// 		$.ajax({
+// 			url: "{% url 'remove_follower' %}",
+// 			type: "POST",
+// 			dataType: 'json',
+// 			data: {
+// 					'event_id' : {{event.id}},
+					
+// 			},
+// 			success: function(result){
+// 				alert('ok');
+
+// 			},
+// 			failure: function(e){
+// 				alert(e);
+// 			}
+// 		});
+
+// 	});
+	
+// 	var socket = io.connect('/chat');
+
+// 	socket.on('connect', function () {
+//     $('#chat').addClass('connected');
+//     socket.emit('join', window.event_room_id); 
+//     alert('connected');
+// 	});
+
+// socket.on('announcement', function (msg) {
+//     $('#lines').append($('<p>').append($('<em>').text(msg)));
+// });
+
+// socket.on('nicknames', function (nicknames) {
+//     $('#nicknames').empty().append($('<span>Online: </span>'));
+//     for (var i in nicknames) {
+// 	  $('#nicknames').append($('<b>').text(nicknames[i]));
+//     }
+// });
+
+// socket.on('msg_to_room', message);
+
+// socket.on('reconnect', function () {
+//     $('#lines').remove();
+//     message('System', 'Reconnected to the server');
+// });
+
+// socket.on('reconnecting', function () {
+//     message('System', 'Attempting to re-connect to the server');
+// });
+
+// socket.on('error', function (e) {
+//     message('System', e ? e : 'A unknown error occurred');
+// });
+
+// function message (from, msg) {
+//     $('#lines').append($('<p>').append($('<b>').text(from), msg));
+// }
+
+// // DOM manipulation
+// $(function () {
+//     $('#set-nickname').submit(function (ev) {
+//         socket.emit('nickname', $('#nick').val(), function (set) {
+//             if (set) {
+//                 clear();
+//                 return $('#chat').addClass('nickname-set');
+//             }
+//             $('#nickname-err').css('visibility', 'visible');
+//         });
+//         return false;
+//     });
+
+//     $('#send-message').submit(function (e) {
+//         e.preventDefault();
+// 	    message('me', $('#message').val());
+// 	    socket.emit('user message', '{{user}}', $('#message').val());
+// 	    clear();
+// 	    $('#lines').get(0).scrollTop = 10000000;
+// 	    return false;
+//     });
+
+    
+//     function clear () {
+//         $('#message').val('').focus();
+//     };
+// });
+window.event_room_id = "{{event.id}}";
+
+$(document).ready(function(){
+      var socket = io.connect('localhost', {port: 4000});
+
+socket.on('connect', function(){
+        console.log("connect");
+      });
+
+var entry_el = $('#comment');
+
+socket.on('message', function(message) {
+        //Escape HTML characters
+        var data = message.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+//Append message to the bottom of the list
+        $('#comments').append('<li>' + data + '</li>');
+        window.scrollBy(0, 10000000000);
+        entry_el.focus();
+      });
+entry_el.keypress(function(event){
+        //When enter is pressed send input value to node server
+        if(event.keyCode != 13) return;
+        var msg = entry_el.attr('value');
+        if(msg){
+           socket.emit('send_message', msg, function(data){
+                console.log(data);
+           });
+        
+        //Clear input value   
+        entry_el.attr('value', '');
+       }
+      });
+    });
+</script>
+
+</head>
+
+<body>
+	{{event.name}}<br><br>
+	<h2>Whats it about</h2>
+	{{event.description}}<br>
+
+	{% thumbnail event.image "250x250" crop="center" as im %}
+		<img src="{{im.url}}" width="{{im.width}}" height="{{im.height}}">
+		{% endthumbnail %}
+		<br>
+		{
+	<button id="follow_event">Follow</button>
+	<button id="email">Email creator</button>
+	<button id="email">Facebook</button>
+	<button id="email">Twitter</button>
+	<!-- <div id='chat'>
+
+		 
+  		
+  	<div >
+    <div class="wrap">Connecting to socket.io server</div>
+  </div>
+  <div id="messages">
+    <div id="nicknames"><span>Online:</span></div>
+    <div id="lines"></div>
+  </div>
+  <form id="send-message">
+    <input id="message">
+    <button >Send</button>
+
+  </form>
+
+	</div> -->
+<ul id="comments">
+        {% for comment in comments %}
+            <li>{{comment.user}}: {{comment.text}}</li>
+        {% endfor %}
+    </ul>
+    <input type="text" id="comment" name="comment" />
+
+</body>
+
+</html>

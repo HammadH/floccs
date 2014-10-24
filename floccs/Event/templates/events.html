@@ -1,0 +1,109 @@
+{% load staticfiles %}
+{% load thumbnail %}
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<script src="{% static 'js/socket.io.js' %}"></script>
+<script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+<script src="{% static 'js/leaflet.awesome-markers.js' %}"></script>
+<script src="{{ STATIC_URL }}js/socket.io.js"></script>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+<link rel="stylesheet" href="{% static 'css/leaflet.awesome-markers.css' %}">
+
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+<script>
+
+/*var socket = io.connect("/events");*/
+/*socket.on('connect', function(){*/
+/*    */
+/*})*/
+var map, marker, user_longitude, user_latitude;
+
+function initialize() {
+
+/*navigator.geolocation.getCurrentPosition(showPosition);
+ 
+ function showPosition(position)
+{
+   user_latitude = position.coords.latitude;
+   user_longitude = position.coords.longitude;
+   console.log(user_longitude.constructor.name);  
+    console.log(user_latitude.constructor.name);
+  
+}
+*/
+var map_options = {
+    center: new L.LatLng(25.2000, 55.3000),
+    zoom: 9
+};
+
+map = L.map('map', map_options);
+
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    key: 'c4c257dc48b34cfcaf47eb4ef9f1a3c2',
+    styleId: 997
+}).addTo(map); 
+
+
+    
+var yellowMarker = L.AwesomeMarkers.icon({
+
+    icon: 'glyphicon glyphicon-star',
+    markerColor: 'orange'
+});
+
+{% for marker in markers %}
+var temp_marker = L.marker([{{marker.geometry.x}}, {{marker.geometry.y}}]).addTo(map).bindPopup("{{marker.event.name}}<span class='glyphicon glyphicon-user'>{{marker.event.followers.all.count}}</span><br>{% thumbnail marker.event.image '50x50' crop='center' as im %}<img src='{{im.url}}' width='{{im.width}}' height='{{im.height}}'>{% endthumbnail %}<br><a href={{marker.event.get_absolute_url}}>View Details</a>");
+    temp_marker.on('click', function(e){
+        e.target.setIcon(yellowMarker);
+    });
+
+{% endfor %}
+
+};
+/*var loadMap = function (id) {
+    var HELSINKI = [60.1708, 24.9375];
+    var map = L.map(id);
+    var tile_url = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+    var layer = L.tileLayer(tile_url, {
+        attribution: 'OSM'
+    });
+    map.addLayer(layer);
+    map.setView(HELSINKI, 19);
+
+    map.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
+        /*.on('locationfound', function(e){
+            var marker = L.marker([e.latitude, e.longitude]).bindPopup('Your ass is here :)');
+            var circle = L.circle([e.latitude, e.longitude], e.accuracy/2, {
+                weight: 1,
+                color: 'blue',
+                fillColor: '#cacaca',
+                fillOpacity: 0.2
+            });
+            map.addLayer(marker);
+            map.addLayer(circle);
+        })
+       .on('locationerror', function(e){
+            console.log(e);
+            alert("Location access denied.");
+        });
+};
+
+loadMap('map');*/
+
+
+
+
+
+
+
+</script>
+
+</head>
+<body onload='initialize()'>
+    <div id="map" style="width:1000px; height:1000px"></div>
+    
+</body>
+</html>

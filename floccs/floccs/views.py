@@ -4,9 +4,8 @@ from django.core.urlresolvers import reverse
 from django.views.generic import FormView
 from django.views.generic import View
 from django.contrib.auth import logout
-
-from django.template import RequestContext
 from django.contrib.auth.forms import AuthenticationForm
+from django.template import RequestContext
 from django.contrib.auth import authenticate, login
 from CustomUser.forms import UserForm
 from CustomUser.models import User
@@ -42,7 +41,7 @@ class IndexView(View):
 			form = UserForm(request.POST)
 			if form.is_valid:
 				new_user = form.save()
-				return HttpResponseRedirect(reverse('new_profile', kwargs={'username':new_user.username}))
+				return HttpResponseRedirect(reverse('new_profile', kwargs={'id':new_user.id}))
 				
 					
 			else:

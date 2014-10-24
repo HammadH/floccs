@@ -46,16 +46,23 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'rest_framework',
     'south',
     'taggit',
     'debug_toolbar',
     'social_auth',
+    'sorl.thumbnail',
+    'bootstrap3_datetime',
     'CustomUser',
     'Profile',
     'Projects',
     'Notifications',
     'Message',
+    'Markers',
+    'Event',
+
+
 
     
 )
@@ -72,6 +79,15 @@ TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
     
     'social_auth.context_processors.social_auth_by_type_backends',
     ) 
+SOCIAL_AUTH_PIPELINE = (
+    'social_auth.backends.pipeline.social.social_auth_user',
+    'social_auth.backends.pipeline.associate.associate_by_email',
+    'social_auth.backends.pipeline.user.get_username',
+    'social_auth.backends.pipeline.user.create_user',
+    'social_auth.backends.pipeline.social.associate_user',
+    'social_auth.backends.pipeline.social.load_extra_data',
+    'social_auth.backends.pipeline.user.update_user_details'
+    )
 
 SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
 SOCIAL_AUTH_UID_LENGTH =  225
@@ -114,11 +130,12 @@ WSGI_APPLICATION = 'floccs.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':  'floccs_db',
-        'USER': 'hammad',
-        'PASSWORD': 'quakeroats',
-        'HOST': ''
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME':  'test1',
+        'USER': 'geouser',
+        'PASSWORD': 'geopassword',
+        'HOST': 'localhost',
+        'PORT':'5432'
     }
 }
 
@@ -140,3 +157,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    )
+
+MEDIA_URL = "/media/"
+

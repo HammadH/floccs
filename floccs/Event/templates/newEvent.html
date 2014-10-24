@@ -1,0 +1,82 @@
+{% load static from staticfiles %}
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+<link rel="stylesheet" 
+              href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.css">
+<link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet" type="text/css"/>
+<script src="{% static 'js/bootstrap.js' %}"></script>
+{{form.media}}
+<script>
+var map, marker;
+
+function initialize() {
+ var map_options = {center: new L.LatLng(25.2000, 55.3000), zoom:7};
+
+
+ map = L.map('map', map_options);
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    key: 'c4c257dc48b34cfcaf47eb4ef9f1a3c2',
+    styleId: 997
+}).addTo(map); 
+
+
+
+var new_event_marker;
+
+map.on('click', function(e) {
+        
+        if(typeof(new_event_marker)==='undefined')
+        {
+            new_event_marker= new L.marker(e.latlng,{draggable: true});
+            new_event_marker.addTo(map);
+            document.getElementById('marker').value = JSON.stringify(new_event_marker.toGeoJSON()); 
+           
+            new_event_marker.on('click', function(e){
+
+    $('#chat').load('http://127.0.0.1:8000');
+});
+
+            }
+        
+        else
+        {
+            new_event_marker.setLatLng(e.latlng);
+        }   
+    });
+
+
+
+
+}
+
+
+
+
+$(document).ready(function () {
+       
+});
+</script>
+<style>
+    body {font-family: sans-serif}
+    #map {width: 500px; height: 300px}
+    #waypoints {overflow: auto; width: 500px; height: 100px}
+    .linkOFF {color: darkblue}
+    .linkON {color: white; background-color: darkblue}
+</style>
+</head>
+<body onload='initialize()'>
+    <div id="map"></div>
+   <form method = "POST" enctype= "multipart/form-data">{% csrf_token %}
+{{eventForm.as_p}}
+ <input type="hidden" name='data' id="marker" value=''/>
+<button type="submit">Create Event</button>
+</form>
+    
+</body>
+</html>

@@ -13,16 +13,17 @@ from django.core.urlresolvers import reverse
 
 class UserManager(BaseUserManager):
 
-    def _create_user(self, username, email, password, 
+    def _create_user(self, username, email,  password, 
                      is_staff, is_superuser, **extra_fields):
         """
-        Creates and saves a User with the given username, email and password.
+        Creates and saves a User with the given email, password, first_name, last_name and place_of_stay.
         """
         now = timezone.now()
         if not username:
-            raise ValueError('The given username must be set')
+            raise ValueError('The username must be set')
         email = self.normalize_email(email)
-        user = self.model(username=username, email=email,
+        user = self.model(username=username,
+                          email=email,
                           is_staff=is_staff, is_active=True,
                           is_superuser=is_superuser, last_login=now,
                           date_joined=now, **extra_fields)
@@ -31,11 +32,11 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, username, email=None, password=None,  **extra_fields):
-        return self._create_user(username, email, password, False, False,
+        return self._create_user( username, email, password, False, False,
                                  **extra_fields)
 
-    def create_superuser(self, username, email, password, **extra_fields):
-        return self._create_user(username, email, password, True, True,
+    def create_superuser(self, username,  email, password, **extra_fields):
+        return self._create_user(username, email,password, True, True,
                                  **extra_fields)
 
 
@@ -47,17 +48,12 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
 
     Username, password and email are required. Other fields are optional.
     """
-    username = models.CharField(_('username'), max_length=30, unique=True,
-        help_text=_('Required. 30 characters or fewer. Letters, digits and '
-                    '@/./+/-/_ only.'),
-        validators=[
-            validators.RegexValidator(r'^[\w.@+-]+$', _('Enter a valid username.'), 'invalid')
-        ])
+    username= models.CharField(_("username"), max_length=30, unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     email = models.EmailField(_('email address'), blank = False)
 
-    place_of_stay = models.CharField(max_length=150, blank=False)
+    
 
     is_staff = models.BooleanField(_('staff status'), default=False,
         help_text=_('Designates whether the user can log into this admin '
@@ -67,7 +63,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
                     'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-	
+    place_of_stay = models.CharField(max_length=150, blank=False)
 
     objects = UserManager()
 
@@ -104,6 +100,7 @@ class User(AbstractUser):
 
     Username, password and email are required. Other fields are optional.
     """
+    #has_active_event = models.BooleanField(default=False)
    
 
 

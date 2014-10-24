@@ -1,0 +1,38 @@
+
+<script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+<script>
+var map, marker;
+
+function initialize() {
+ map = L.map('map').setView([51.505, -0.09], 13);  
+L.tileLayer('http://{s}.tile.cloudmade.com/c4c257dc48b34cfcaf47eb4ef9f1a3c2/{styleId}/256/{z}/{x}/{y}.png', {
+    key: 'c4c257dc48b34cfcaf47eb4ef9f1a3c2',
+    styleId: 997
+}).addTo(map); 
+
+
+var new_event_marker;
+
+map.on('click', function(e) {
+        
+        if(typeof(new_event_marker)==='undefined')
+        {
+            new_event_marker= new L.marker(e.latlng,{draggable: true});
+            new_event_marker.addTo(map);
+            document.getElementById('marker').value = JSON.stringify(new_event_marker.toGeoJSON()); 
+           
+            new_event_marker.on('click', function(e){
+
+    $('#chat').load('http://127.0.0.1:8000');
+});
+
+            }
+        
+        else
+        {
+            new_event_marker.setLatLng(e.latlng);
+        }   
+    });
+}

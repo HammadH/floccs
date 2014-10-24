@@ -1,5 +1,8 @@
 from django import forms
 
+
+
+
 from CustomUser.models import User
 
 class UserForm(forms.ModelForm):
@@ -17,3 +20,5 @@ class UserForm(forms.ModelForm):
 		if commit:
 			new_user.save()
 		return new_user
+
+
